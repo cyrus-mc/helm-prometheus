@@ -30,6 +30,10 @@ rules:
   - deployments
   - replicasets
   verbs: ["list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+  - statefulsets
+  verbs: ["list", "watch"]
 - apiGroups: ["batch"]
   resources:
   - cronjobs
