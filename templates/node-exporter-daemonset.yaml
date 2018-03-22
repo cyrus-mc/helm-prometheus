@@ -28,7 +28,7 @@ spec:
       containers:
       - image: {{ .Values.nodeExporter.image.name }}:{{ .Values.nodeExporter.image.tag }}
         args:
-        - "--web.listen-address=127.0.0.1:{{ .Values.nodeExporter.service.targetPort }}"
+        - "--web.listen-address=0.0.0.0:{{ .Values.nodeExporter.service.targetPort }}"
         - "--path.procfs=/host/proc"
         - "--path.sysfs=/host/sys"
         name: node-exporter
