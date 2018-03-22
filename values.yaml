@@ -30,7 +30,7 @@ prometheus:
 
   resources:
     limits:
-      cpu: 1m
+      cpu: 1000m
       memory: 2048Mi
     requests:
       cpu: 500m
@@ -42,9 +42,9 @@ nodeExporter:
     tag: v0.15.2
 
   service:
-    port: &port 9100
-    targetPort: *port
-    hostPort: *port
+    port: &nodeExporterPort 9100
+    targetPort: *nodeExporterPort
+    hostPort: *nodeExporterPort
 
   resources:
     limits:
