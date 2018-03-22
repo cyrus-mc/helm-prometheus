@@ -34,6 +34,11 @@ spec:
       containers:
       - name: kube-state-metrics
         image: {{ .Values.kubeStateMetrics.image.name }}:{{ .Values.kubeStateMetrics.image.tag }}
+        args:
+        - "--host=0.0.0.0"
+        - "--port={{ .Values.kubeStateMetrics.service.targetPort }}"
+        - "--telemetry-host=0.0.0.0"
+        - "--telemetry-port={{ add .Values.kubeStateMetrics.service.targetPort 1 }}"
         ports:
         - name: http-metrics
           containerPort: {{ .Values.kubeStateMetrics.service.targetPort }}

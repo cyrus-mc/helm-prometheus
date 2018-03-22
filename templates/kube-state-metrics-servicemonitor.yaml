@@ -18,15 +18,15 @@ spec:
     matchNames:
     - {{ .Values.global.namespace | default .Release.Namespace }}
   endpoints:
-  - port: https-main
-    scheme: https
+  - port: http-metrics
+    scheme: http
     interval: 30s
     honorLabels: true
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
       insecureSkipVerify: true
-  - port: https-self
-    scheme: https
+  - port: telemetry
+    scheme: http
     interval: 30s
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
