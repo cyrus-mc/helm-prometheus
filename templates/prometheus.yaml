@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    prometheus: k8s
+    release: {{ .Release.Name | quote }}
+  name: k8s
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  replicas: {{ .Values.prometheus.replicas }}
+  version: {{ .Values.prometheus.version }}
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
+    matchExpressions:
+    - {key: k8s-app, operator: Exists}
+  ruleSelector:
+    matchLabels:
+      role: prometheus-rulefiles
+      prometheus: k8s
+  resources:
+{{ toYaml .Values.prometheus.resources | indent 4 }}
+  alerting:
+    alertmanagers:
+    - namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+      name: alertmanager-main
+      port: web
