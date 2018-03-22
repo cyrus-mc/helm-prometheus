@@ -1,0 +1,76 @@
+global:
+  imagePullPolicy: IfNotPresent
+
+  rbac:
+    enabled: true
+
+  scheduling:
+    enabled: true
+
+operator:
+  image:
+    name: quay.io/coreos/prometheus-operator
+    tag: v0.17.0
+
+  service:
+    targetPort: 8080
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 50Mi
+
+prometheus:
+  replicas: 2
+
+  version: v2.2.0-rc.0
+
+  resources:
+    limits:
+      cpu: 1m
+      memory: 2048Mi
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+
+nodeExporter:
+  image:
+    name: quay.io/prometheus/node-exporter
+    tag: v0.15.2
+
+  service:
+    port: &port 9100
+    targetPort: *port
+    hostPort: *port
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 50Mi
+    requests:
+      cpu: 100m
+      memory: 30Mi
+
+kubeStateMetrics:
+  enabled: true
+
+  image:
+    name: quay.io/coreos/kube-state-metrics
+    tag: v1.2.0
+
+  service:
+    port: &port 8080
+    targetPort: *port
+
+  replicas: 1
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 300Mi
+    requests:
+      cpu: 100m
+      memory: 150Mi
