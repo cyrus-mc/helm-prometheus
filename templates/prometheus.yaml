@@ -25,6 +25,20 @@ spec:
       prometheus: k8s
   resources:
 {{ toYaml .Values.prometheus.resources | indent 4 }}
+  retention: {{ .Values.prometheus.configuration.retention }}
+{{ if .Values.prometheus.storage.enabled }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+{{- range .Values.prometheus.storage.accessModes }}
+        - {{ . }}
+{{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.prometheus.storage.size }}
+        storageClassName: {{ .Values.prometheus.storage.storageClassName }}
+{{- end }}
   alerting:
     alertmanagers:
     - namespace: {{ .Values.global.namespace | default .Release.Namespace }}

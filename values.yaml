@@ -18,6 +18,15 @@ global:
                 values:
                 - 'services'
 
+  storage: &storage
+    enabled: true
+
+    provisioner: kubernetes.io/aws-ebs
+    parameters:
+      type: gp2
+
+    storageClassName: prometheus
+
 operator:
   image:
     name: quay.io/coreos/prometheus-operator
@@ -42,6 +51,11 @@ operator:
 
 
 prometheus:
+  configuration:
+    ## How long to retain metrics
+    ##
+    retention: 24h
+
   replicas: 2
 
   resources:
@@ -54,6 +68,14 @@ prometheus:
 
   scheduling:
     <<: *scheduling
+
+  storage:
+    <<: *storage
+
+    accessModes:
+    - ReadWriteOnce
+
+    size: 1Gi
 
   version: v2.2.0-rc.0
 
