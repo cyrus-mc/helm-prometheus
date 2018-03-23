@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    role: prometheus-rulefiles
+    prometheus: k8s
+  name: prometheus-rules
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+data:
+  pod-restart.rules.yaml: |
+{{ .Files.Get "rules/pod-restart.rules.yaml.tpl" | indent 4 }}
