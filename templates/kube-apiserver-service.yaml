@@ -10,8 +10,7 @@ metadata:
   namespace: kube-system
 spec:
   selector:
-    component: apiserver
-    provider: kubernetes
+    k8s-app: kube-apiserver
   type: ClusterIP
   clusterIP: None
   ports:
