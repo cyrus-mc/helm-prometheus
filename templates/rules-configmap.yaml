@@ -13,3 +13,7 @@ metadata:
 data:
   pod-restart.rules.yaml: |
 {{ .Files.Get "rules/pod-restart.rules.yaml.tpl" | indent 4 }}
+{{- if .Values.prometheus.selfMonitor }}
+  prometheus.rules.yaml: |
+{{ .Files.Get "rules/prometheus.rules.yaml.tpl" | indent 4 }}
+{{- end }}
