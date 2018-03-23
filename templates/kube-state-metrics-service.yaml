@@ -12,6 +12,8 @@ metadata:
   name: kube-state-metrics
   namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
+  type: ClusterIP
+  clusterIP: None
   ports:
   - name: http-metrics
     port: {{ .Values.kubeStateMetrics.service.port }}
