@@ -1,0 +1,142 @@
+global:
+  imagePullPolicy: IfNotPresent
+
+  rbac:
+    enabled: true
+
+  scheduling: &scheduling
+    enabled: true
+
+    rules:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - 'services'
+
+  storage: &storage
+    enabled: true
+
+    provisioner: kubernetes.io/aws-ebs
+    parameters:
+      type: gp2
+
+    storageClassName: prometheus
+
+operator:
+  image:
+    name: quay.io/coreos/prometheus-operator
+    tag: v0.17.0
+
+  service:
+    targetPort: 8080
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 50Mi
+
+  scheduling:
+    <<: *scheduling
+
+  service:
+    targetPort: 8080
+
+
+prometheus:
+  configuration:
+    ## How long to retain metrics
+    ##
+    retention: 24h
+
+  replicas: 2
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2048Mi
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+
+  scheduling:
+    <<: *scheduling
+
+  storage:
+    <<: *storage
+
+    accessModes:
+    - ReadWriteOnce
+
+    size: 1Gi
+
+  version: v2.2.0-rc.0
+
+alertmanager:
+  replicas: 1
+
+  resources:
+    limits:
+      cpu: 5m
+      memory: 10Mi
+    requests:
+      cpu: 5m
+      memory: 10Mi
+
+  scheduling:
+    <<: *scheduling
+
+  service:
+    port: 9093
+    type: ClusterIP
+
+  version: v0.14.0
+
+nodeExporter:
+  image:
+    name: quay.io/prometheus/node-exporter
+    tag: v0.15.2
+
+  service:
+    port: &nodeExporterPort 9100
+    targetPort: *nodeExporterPort
+    hostPort: *nodeExporterPort
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 50Mi
+    requests:
+      cpu: 100m
+      memory: 30Mi
+
+kubeStateMetrics:
+  enabled: true
+
+  image:
+    name: quay.io/coreos/kube-state-metrics
+    tag: v1.2.0
+
+  service:
+    port: &port 8080
+    targetPort: *port
+
+  replicas: 1
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 300Mi
+    requests:
+      cpu: 100m
+      memory: 150Mi
+
+  scheduling:
+    <<: *scheduling

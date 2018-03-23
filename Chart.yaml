@@ -1,0 +1,15 @@
+name: prometheus
+version: 1.0.0
+description: Open-source systems monitoring and alerting tool
+keywords:
+  - monitoring
+  - prometheus
+  - alerting
+home: https://prometheus.io
+sources:
+  - git@bitbucket.org:dat/helm-prometheus.git
+maintainers:
+  - name: DAT
+    email: devops@dat.com
+engine: gotpl
+appVersion: 2.2.0

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    k8s-app: kube-apiserver
+  name: kube-apiserver-prometheus-discovery
+  namespace: kube-system
+spec:
+  selector:
+    k8s-app: kube-apiserver
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http-metrics
+    port: 10255
+    targetPort: 10255
+    protocol: TCP

@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    k8s-app: prometheus-operator
+    release: {{ .Release.Name | quote }}
+  name: prometheus-operator
+  namespace: {{ .Values.Namespace | default .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: prometheus-operator
+  template:
+    metadata:
+      labels:
+        k8s-app: prometheus-operator
+    spec:
+{{- if .Values.operator.scheduling.enabled }}
+{{ toYaml .Values.operator.scheduling.rules | indent 6 }}
+{{- end }}
+      containers:
+      - args:
+        - --kubelet-service=kube-system/kubelet
+        - --config-reloader-image=quay.io/coreos/configmap-reload:v0.0.1
+        image: {{ .Values.operator.image.name }}:{{ .Values.operator.image.tag }}
+        name: prometheus-operator
+        ports:
+        - containerPort: {{ .Values.operator.service.targetPort }}
+          name: http
+        resources:
+{{ toYaml .Values.operator.resources | indent 12 }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccountName: prometheus-operator

@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    k8s-app: kube-state-metrics
+    releaes: {{ .Release.Name | quote }}
+  name: kube-state-metrics
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: kube-state-metrics
+  replicas:  {{ .Values.kubeStateMetrics.replicas }}
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-state-metrics
+    spec:
+{{- if .Values.kubeStateMetrics.scheduling.enabled }}
+{{ toYaml .Values.kubeStateMetrics.scheduling.rules | indent 6 }}
+{{- end }}
+      serviceAccountName: kube-state-metrics
+      containers:
+      - name: kube-state-metrics
+        image: {{ .Values.kubeStateMetrics.image.name }}:{{ .Values.kubeStateMetrics.image.tag }}
+        args:
+        - "--host=0.0.0.0"
+        - "--port={{ .Values.kubeStateMetrics.service.targetPort }}"
+        - "--telemetry-host=0.0.0.0"
+        - "--telemetry-port={{ add .Values.kubeStateMetrics.service.targetPort 1 }}"
+        ports:
+        - name: http-metrics
+          containerPort: {{ .Values.kubeStateMetrics.service.targetPort }}
+        - name: telemetry
+          containerPort: {{ add .Values.kubeStateMetrics.service.targetPort 1 }}
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: {{ .Values.kubeStateMetrics.service.targetPort }}
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+#      - name: addon-resizer
+#        image: k8s.gcr.io/addon-resizer:1.8.1
+#        resources:
+#          limits:
+#            cpu: 100m
+#            memory: 30Mi
+#          requests:
+#            cpu: 100m
+#            memory: 30Mi
+#        env:
+#          - name: MY_POD_NAME
+#            valueFrom:
+#              fieldRef:
+#                fieldPath: metadata.name
+#          - name: MY_POD_NAMESPACE
+#            valueFrom:
+#              fieldRef:
+#                fieldPath: metadata.namespace
+#        command:
+#          - /pod_nanny
+#          - --container=kube-state-metrics
+#          - --cpu=100m
+#          - --extra-cpu=1m
+#          - --memory=100Mi
+#          - --extra-memory=2Mi
+#          - --threshold=5
+#          - --deployment=kube-state-metrics

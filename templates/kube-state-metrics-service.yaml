@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: 'true'
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    k8s-app: kube-state-metrics
+    release: {{ .Release.Name | quote }}
+  name: kube-state-metrics
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http-metrics
+    port: {{ .Values.kubeStateMetrics.service.port }}
+    targetPort: http-metrics
+    protocol: TCP
+  - name: telemetry
+    port: {{ add .Values.kubeStateMetrics.service.port 1 }}
+    targetPort: telemetry
+    protocol: TCP
+  selector:
+    k8s-app: kube-state-metrics

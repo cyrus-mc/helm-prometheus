@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    prometheus: k8s
+    release: {{ .Release.Name | quote }}
+  name: alertmanager-main
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  replicas: {{ .Values.alertmanager.replicas }}
+  resources:
+{{ toYaml .Values.alertmanager.resources | indent 4 }}
+  version: {{ .Values.alertmanager.version }}
+{{- if .Values.alertmanager.scheduling.enabled }}
+{{ toYaml .Values.alertmanager.scheduling.rules | indent 2 }}
+{{- end }}
