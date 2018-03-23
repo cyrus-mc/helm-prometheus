@@ -17,3 +17,9 @@ data:
   prometheus.rules.yaml: |
 {{ .Files.Get "rules/prometheus.rules.yaml.tpl" | indent 4 }}
 {{- end }}
+{{- $files := .Files }}
+{{- range .Values.prometheus.rules }}
+  {{ . }}.rules.yaml: |
+{{- $file := printf "rules/%s.rules.yaml.tpl" . }}
+{{ $files.Get $file | indent 4 }}
+{{- end }}
