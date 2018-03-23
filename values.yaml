@@ -66,6 +66,9 @@ prometheus:
       cpu: 500m
       memory: 1024Mi
 
+  rules:
+  - k8s-nodes
+
   scheduling:
     <<: *scheduling
 
