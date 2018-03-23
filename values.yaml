@@ -71,6 +71,10 @@ alertmanager:
   scheduling:
     <<: *scheduling
 
+  service:
+    port: 9093
+    type: ClusterIP
+
   version: v0.14.0
 
 nodeExporter:

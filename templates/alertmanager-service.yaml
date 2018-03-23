@@ -9,10 +9,10 @@ metadata:
   name: alertmanager-main
   namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.alertmanager.service.type }}
   ports:
   - name: web
-    port: 9093
+    port: {{ .Values.alertmanager.service.port }}
     protocol: TCP
     targetPort: web
   selector:
