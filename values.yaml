@@ -4,8 +4,19 @@ global:
   rbac:
     enabled: true
 
-  scheduling:
+  scheduling: &scheduling
     enabled: true
+
+    rules:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - 'services'
 
 operator:
   image:
@@ -23,10 +34,15 @@ operator:
       cpu: 100m
       memory: 50Mi
 
+  scheduling:
+    <<: *scheduling
+
+  service:
+    targetPort: 8080
+
+
 prometheus:
   replicas: 2
-
-  version: v2.2.0-rc.0
 
   resources:
     limits:
@@ -35,6 +51,27 @@ prometheus:
     requests:
       cpu: 500m
       memory: 1024Mi
+
+  scheduling:
+    <<: *scheduling
+
+  version: v2.2.0-rc.0
+
+alertmanager:
+  replicas: 1
+
+  resources:
+    limits:
+      cpu: 5m
+      memory: 10Mi
+    requests:
+      cpu: 5m
+      memory: 10Mi
+
+  scheduling:
+    <<: *scheduling
+
+  version: v0.14.0
 
 nodeExporter:
   image:
@@ -74,3 +111,6 @@ kubeStateMetrics:
     requests:
       cpu: 100m
       memory: 150Mi
+
+  scheduling:
+    <<: *scheduling

@@ -16,6 +16,9 @@ spec:
   serviceMonitorSelector:
     matchExpressions:
     - {key: k8s-app, operator: Exists}
+{{- if .Values.prometheus.scheduling.enabled }}
+{{ toYaml .Values.prometheus.scheduling.rules | indent 2 }}
+{{- end }}
   ruleSelector:
     matchLabels:
       role: prometheus-rulefiles

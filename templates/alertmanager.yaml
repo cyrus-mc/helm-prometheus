@@ -10,4 +10,10 @@ metadata:
   name: alertmanager-main
   namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.alertmanager.replicas }}
+  resources:
+{{ toYaml .Values.alertmanager.resources | indent 4 }}
+  version: {{ .Values.alertmanager.version }}
+{{- if .Values.alertmanager.scheduling.enabled }}
+{{ toYaml .Values.alertmanager.scheduling.rules | indent 2 }}
+{{- end }}

@@ -19,16 +19,8 @@ spec:
       labels:
         k8s-app: prometheus-operator
     spec:
-{{- if .Values.global.scheduling.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: role
-                operator: In
-                values:
-                - 'services'
+{{- if .Values.operator.scheduling.enabled }}
+{{ toYaml .Values.operator.scheduling.rules | indent 6 }}
 {{- end }}
       containers:
       - args:
