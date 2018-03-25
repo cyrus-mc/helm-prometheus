@@ -25,7 +25,7 @@ global:
     parameters:
       type: gp2
 
-    storageClassName: prometheus
+    storageClassName: standard
 
 operator:
   image:
