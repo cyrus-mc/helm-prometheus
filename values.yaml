@@ -68,6 +68,7 @@ prometheus:
 
   rules:
   - k8s-nodes
+  - kubelet
 
   scheduling:
     <<: *scheduling
@@ -85,7 +86,7 @@ prometheus:
     accessModes:
     - ReadWriteOnce
 
-    size: 1Gi
+    size: 50Gi
 
   version: v2.2.0-rc.0
 
@@ -95,10 +96,10 @@ alertmanager:
   resources:
     limits:
       cpu: 5m
-      memory: 10Mi
+      memory: 20Mi
     requests:
       cpu: 5m
-      memory: 10Mi
+      memory: 20Mi
 
   scheduling:
     <<: *scheduling
