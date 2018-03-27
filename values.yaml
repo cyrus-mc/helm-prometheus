@@ -69,6 +69,7 @@ prometheus:
   rules:
   - k8s-nodes
   - kubelet
+  - kube-apiserver
 
   scheduling:
     <<: *scheduling
