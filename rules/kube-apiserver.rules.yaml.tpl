@@ -2,7 +2,7 @@ groups:
 - name: kube-apiserver.rules
   rules:
   - alert: K8SApiserverDown
-    expr: absent(up{job="apiserver"} == 1)
+    expr: absent(up{job="kube-apiserver"} == 1)
     for: 5m
     labels:
       severity: critical
