@@ -67,6 +67,7 @@ prometheus:
       memory: 1024Mi
 
   rules:
+  - pod
   - k8s-nodes
   - kubelet
   - kube-apiserver
