@@ -1,0 +1,17 @@
+{{- if .Values.alertmanager.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.alertmanager.ingress.class }}
+  name: alertmanager
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  rules:
+  - host: alertmanager.{{ .Values.alertmanager.ingress.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: alertmanager-main
+          servicePort: {{ .Values.alertmanager.service.port }}
+{{- end }}

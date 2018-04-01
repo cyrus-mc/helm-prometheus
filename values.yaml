@@ -1,6 +1,13 @@
 global:
   imagePullPolicy: IfNotPresent
 
+  ingress: &ingress
+    enabled: true
+
+    class: nginx
+
+    domain: test.dat.internal
+
   rbac:
     enabled: true
 
@@ -56,7 +63,10 @@ prometheus:
     ##
     retention: 24h
 
-  replicas: 2
+  ingress:
+    <<: *ingress
+
+  replicas: 1
 
   resources:
     limits:
@@ -93,6 +103,9 @@ prometheus:
   version: v2.2.0-rc.0
 
 alertmanager:
+  ingress:
+    <<: *ingress
+
   replicas: 1
 
   resources:

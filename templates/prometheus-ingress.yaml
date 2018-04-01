@@ -1,0 +1,17 @@
+{{- if .Values.prometheus.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.prometheus.ingress.class }}
+  name: prometheus
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  rules:
+  - host: prometheus.{{ .Values.prometheus.ingress.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: prometheus
+          servicePort: {{ .Values.prometheus.service.port }}
+{{- end }}
