@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    prometheus: k8s
+  name: prometheus-deployment
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+data:
+  prometheus.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: Prometheus
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        prometheus: k8s
+        release: {{ .Release.Name | quote }}
+      name: k8s
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      replicas: {{ .Values.prometheus.replicas }}
+      version: {{ .Values.prometheus.version }}
+      serviceAccountName: prometheus
+    {{- if .Values.prometheus.ingress.enabled }}
+      externalUrl: http://prometheus.{{ .Values.prometheus.ingress.domain }}
+    {{- end }}
+      serviceMonitorSelector:
+        matchExpressions:
+        - {key: k8s-app, operator: Exists}
+    {{- if .Values.prometheus.scheduling.enabled }}
+{{ toYaml .Values.prometheus.scheduling.rules | indent 6 }}
+    {{- end }}
+      ruleSelector:
+        matchLabels:
+          role: prometheus-rulefiles
+          prometheus: k8s
+      resources:
+{{ toYaml .Values.prometheus.resources | indent 8 }}
+      retention: {{ .Values.prometheus.configuration.retention }}
+    {{ if .Values.prometheus.storage.enabled }}
+      storage:
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+    {{- range .Values.prometheus.storage.accessModes }}
+            - {{ . }}
+    {{- end }}
+            resources:
+              requests:
+                storage: {{ .Values.prometheus.storage.size }}
+            storageClassName: {{ .Values.prometheus.storage.storageClassName }}
+    {{- end }}
+      alerting:
+        alertmanagers:
+        - namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+          name: alertmanager-main
+          port: web
+  alertmanager.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: Alertmanager
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        prometheus: k8s
+        release: {{ .Release.Name | quote }}
+      name: alertmanager-main
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      replicas: {{ .Values.alertmanager.replicas }}
+      resources:
+{{ toYaml .Values.alertmanager.resources | indent 8 }}
+      version: {{ .Values.alertmanager.version }}
+    {{- if .Values.alertmanager.ingress.enabled }}
+      externalUrl: http://alertmanager.{{ .Values.alertmanager.ingress.domain }}
+    {{- end }}
+    {{- if .Values.alertmanager.scheduling.enabled }}
+{{ toYaml .Values.alertmanager.scheduling.rules | indent 6 }}
+    {{- end }}
+

@@ -1,0 +1,191 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    prometheus: k8s
+  name: prometheus-servicemonitor
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+data:
+  kube-apiserver-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: kube-controller-manager
+        release: {{ .Release.Name | quote }}
+      name: kube-apiserver
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      endpoints:
+      - port: http-metrics
+        interval: 30s
+      selector:
+        matchLabels:
+          k8s-app: kube-apiserver
+      namespaceSelector:
+        matchNames:
+        - kube-system
+  kube-controller-manager-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: kube-controller-manager
+        release: {{ .Release.Name | quote }}
+      name: kube-controller-manager
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      endpoints:
+      - port: http-metrics
+        interval: 30s
+      selector:
+        matchLabels:
+          k8s-app: kube-controller-manager
+      namespaceSelector:
+        matchNames:
+        - kube-system
+  kube-scheduler-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: kube-scheduler
+        release: {{ .Release.Name | quote }}
+      name: kube-scheduler
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      endpoints:
+      - port: http-metrics
+        interval: 30s
+      selector:
+        matchLabels:
+        k8s-app: kube-scheduler
+      namespaceSelector:
+        matchNames:
+        - kube-system
+  kube-state-metrics-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: kube-state-metrics
+        release: {{ .Release.Name | quote }}
+      name: kube-state-metrics
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      selector:
+        matchLabels:
+          k8s-app: kube-state-metrics
+      namespaceSelector:
+        matchNames:
+        - {{ .Values.global.namespace | default .Release.Namespace }}
+      endpoints:
+      - port: http-metrics
+        scheme: http
+        interval: 30s
+        honorLabels: true
+        bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tlsConfig:
+          insecureSkipVerify: true
+  kubelet-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: kubelet
+        release: {{ .Release.Name | quote }}
+      name: kubelet
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      endpoints:
+      - port: https-metrics
+        scheme: https
+        interval: 30s
+        bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tlsConfig:
+          insecureSkipVerify: true
+      selector:
+        matchLabels:
+          k8s-app: kubelet
+      namespaceSelector:
+        matchNames:
+        - kube-system
+  node-exporter-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: node-exporter
+        release: {{ .Release.Name | quote }}
+      name: node-exporter
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      selector:
+        matchLabels:
+          k8s-app: node-exporter
+      namespaceSelector:
+        matchNames:
+        - {{ .Values.global.namespace | default .Release.Namespace }}
+      endpoints:
+      - port: http-metrics
+        scheme: http
+        interval: 30s
+        bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tlsConfig:
+          insecureSkipVerify: true
+{{- if .Values.prometheus.selfMonitor }}
+  prometheus-servicemonitor.yaml: |-
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        component: {{ template "fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        k8s-app: prometheus
+        prometheus: k8s
+        release: {{ .Release.Name | quote }}
+      name: prometheus
+      namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+    spec:
+      jobLabel: k8s-app
+      selector:
+        matchLabels:
+          app: prometheus
+          prometheus: k8s
+      namespaceSelector:
+        matchNames:
+        - {{ .Values.global.namespace | default .Release.Namespace }}
+      endpoints:
+      - port: web
+        scheme: http
+        interval: 30s
+{{- end }}
