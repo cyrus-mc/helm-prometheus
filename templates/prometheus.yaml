@@ -13,6 +13,9 @@ spec:
   replicas: {{ .Values.prometheus.replicas }}
   version: {{ .Values.prometheus.version }}
   serviceAccountName: prometheus
+{{- if .Values.prometheus.ingress.enabled }}
+  externalUrl: http://prometheus.{{ .Values.prometheus.ingress.domain }}
+{{- end }}
   serviceMonitorSelector:
     matchExpressions:
     - {key: k8s-app, operator: Exists}
