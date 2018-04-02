@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-delete-policy: hook-succeeded
+    helm.sh/hook-weight: "2"
+  labels:
+    chart: {{ .Chart.Name }}
+    component: {{ template "fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+  name: prometheus-delete-servicemonitor
+  namespace: {{ .Values.Namespace | default .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      name: prometheus-job-delete-servicemonitor
+    spec:
+      containers:
+        - name: hyperkube
+          image: quay.io/coreos/hyperkube:v1.8.5_coreos.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - ./kubectl
+            - delete
+            - -f
+            - /tmp/servicemonitor
+          volumeMounts:
+            - mountPath: "/tmp/servicemonitor"
+              name: tmp-configmap-servicemonitor
+      volumes:
+        - name: tmp-configmap-servicemonitor
+          configMap:
+            name: prometheus-servicemonitor
+      restartPolicy: OnFailure
+      serviceAccountName: prometheus-operator
