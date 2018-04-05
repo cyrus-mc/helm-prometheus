@@ -128,6 +128,9 @@ data:
         bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
         tlsConfig:
           insecureSkipVerify: true
+      - port: cadvisor
+        scheme: http
+        internal: 30s
       selector:
         matchLabels:
           k8s-app: kubelet
