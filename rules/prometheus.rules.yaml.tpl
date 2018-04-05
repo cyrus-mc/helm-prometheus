@@ -7,8 +7,9 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: Reloading Prometheus' configuration has failed for {{`{{$labels.namespace}}`}}/{{`{{$labels.pod}}`}}
+      description: Reloading Prometheus' configuration has failed for {{ $labels.namespace }}/{{ $labels.pod }}
       summary: Reloading Promehteus' configuration failed
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/402554925/PrometheusConfigReloadFailed"
 
   - alert: PrometheusNotificationQueueRunningFull
     expr: predict_linear(prometheus_notifications_queue_length[5m], 60 * 30) > prometheus_notifications_queue_capacity
@@ -16,9 +17,9 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: Prometheus' alert notification queue is running full for {{`{{$labels.namespace}}`}}/{{`{{
-        $labels.pod}}`}}
+      description: Prometheus' alert notification queue is running full for {{ $labels.namespace }}/{{ $labels.pod }}
       summary: Prometheus' alert notification queue is running full
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/402554931/PrometheusNotificationQueueRunningFull"
 
   - alert: PrometheusErrorSendingAlerts
     expr: rate(prometheus_notifications_errors_total[5m]) / rate(prometheus_notifications_sent_total[5m])
@@ -27,9 +28,9 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: Errors while sending alerts from Prometheus {{`{{$labels.namespace}}`}}/{{`{{
-        $labels.pod}}`}} to Alertmanager {{`{{$labels.Alertmanager}}`}}
+      description: Errors while sending alerts from Prometheus {{ $labels.namespace }}/{{ $labels.pod }} to Alertmanager {{ $labels.Alertmanager }}
       summary: Errors while sending alert from Prometheus
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/401899639/PrometheusErrorSendingAlerts"
 
   - alert: PrometheusErrorSendingAlerts
     expr: rate(prometheus_notifications_errors_total[5m]) / rate(prometheus_notifications_sent_total[5m])
@@ -38,9 +39,9 @@ groups:
     labels:
       severity: critical
     annotations:
-      description: Errors while sending alerts from Prometheus {{`{{$labels.namespace}}`}}/{{`{{
-        $labels.pod}}`}} to Alertmanager {{`{{$labels.Alertmanager}}`}}
+      description: Errors while sending alerts from Prometheus {{ $labels.namespace }}/{{ $labels.pod }} to Alertmanager {{ $labels.Alertmanager }}
       summary: Errors while sending alerts from Prometheus
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/401899639/PrometheusErrorSendingAlerts"
 
   - alert: PrometheusNotConnectedToAlertmanagers
     expr: prometheus_notifications_alertmanagers_discovered < 1
@@ -48,9 +49,9 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: Prometheus {{`{{ $labels.namespace }}`}}/{{`{{ $labels.pod}}`}} is not connected
-        to any Alertmanagers
+      description: Prometheus {{ $labels.namespace }}/{{ $labels.pod }} is not connected to any Alertmanagers
       summary: Prometheus is not connected to any Alertmanagers
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/401932368/PrometheusNotConnectedToAlertmanagers"
 
   - alert: PrometheusTSDBReloadsFailing
     expr: increase(prometheus_tsdb_reloads_failures_total[2h]) > 0
@@ -58,9 +59,10 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: '{{`{{$labels.job}}`}} at {{`{{$labels.instance}}`}} had {{`{{$value | humanize}}`}}
+      description: '{{ $labels.job }} at {{ $labels.instance }} had {{ $value | humanize }}
         reload failures over the last four hours.'
       summary: Prometheus has issues reloading data blocks from disk
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/401932372/PrometheusTSDBReloadsFailing"
 
   - alert: PrometheusTSDBCompactionsFailing
     expr: increase(prometheus_tsdb_compactions_failed_total[2h]) > 0
@@ -68,9 +70,10 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: '{{`{{$labels.job}}`}} at {{`{{$labels.instance}}`}} had {{`{{$value | humanize}}`}}
+      description: '{{ $labels.job }} at {{ $labels.instance }} had {{ $value | humanize }}
         compaction failures over the last four hours.'
       summary: Prometheus has issues compacting sample blocks
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/402489408/PrometheusTSDBCompactionsFailing"
 
   - alert: PrometheusTSDBWALCorruptions
     expr: tsdb_wal_corruptions_total > 0
@@ -78,9 +81,10 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: '{{`{{$labels.job}}`}} at {{`{{$labels.instance}}`}} has a corrupted write-ahead
+      description: '{{ $labels.job }} at {{ $labels.instance }} has a corrupted write-ahead
         log (WAL).'
       summary: Prometheus write-ahead log is corrupted
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/402391127/PrometheusTSDBWALCorruptions"
 
   - alert: PrometheusNotIngestingSamples
     expr: rate(prometheus_tsdb_head_samples_appended_total[5m]) <= 0
@@ -88,5 +92,6 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: "Prometheus {{`{{ $labels.namespace }}`}}/{{`{{ $labels.pod}}`}} isn't ingesting samples."
+      description: "Prometheus {{ $labels.namespace }}/{{ $labels.pod }} isn't ingesting samples."
       summary: "Prometheus isn't ingesting samples"
+      url: "https://transcore.jira.com/wiki/spaces/AD/pages/401899661/PrometheusNotIngestingSamples"
