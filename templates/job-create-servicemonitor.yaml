@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   annotations:
-    helm.sh/hook: post-install
+    helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-delete-policy: hook-succeeded
     helm.sh/hook-weight: "2"
   labels:
@@ -11,7 +11,7 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
   name: prometheus-create-servicemonitor
-  namespace: {{ .Values.Namespace | default .Release.Namespace }}
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
   template:
     metadata:

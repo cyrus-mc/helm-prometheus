@@ -11,7 +11,7 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
   name: prometheus-delete-servicemonitor
-  namespace: {{ .Values.Namespace | default .Release.Namespace }}
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
   template:
     metadata:
