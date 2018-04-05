@@ -1,0 +1,11 @@
+global:
+  ingress: &ingress
+    domain: prod.dat.internal
+
+alertmanager:
+  ingress:
+    domain: prod.dat.internal
+
+prometheus:
+  ingress:
+    domain: prod.dat.internal
